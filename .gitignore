@@ -1,3 +1,5 @@
 # these filed are ignored when pushed to git
-apikey.js
+.env
+.vscode
+.npm-debug.log
 .DS_STORE
