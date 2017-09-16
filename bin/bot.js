@@ -1,24 +1,28 @@
 'use strict'
-var SkillBot = require('../lib/skillbot');
+//var SkillBot = require('../lib/skillbot');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var authorizer = require('../authorizer');
 var request = require("request");
+//var skills = require("../skills");
+
 require('dotenv').config()
 
 var token = process.env.API_KEY;
 var name = process.env.BOT_NAME;
+var port = process.env.PORT || 4390;
 
 console.log(token);
 
 // @todo - hide api key
-var skillbot = new SkillBot({
-    token: token,
-    name: 'skillbot'
-});
 
-skillbot.run();
+// skillbot.run();
+
+
+// beginning of app
+
+app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/', function(req, res) {
     res.send('hello world!');
@@ -40,6 +44,7 @@ app.get('/authorization', function(req, res) {
             console.log(error);
         } else {
             res.json(body);
+            //setUpBot();
         }
     });
 })
@@ -47,7 +52,16 @@ app.get('/authorization', function(req, res) {
 
 // @TODO: rewrite bot to use commands such as these instead!
 app.post('/command', function(req, res) {
-    res.send('Your ngrok tunnel is up and running!');
+    res.send('works');
 });
 
-app.listen(4390);
+app.post('/skills', function(req, res) {
+    let msg = req.body.text;
+    let name = req.body.user_name;
+    
+    res.send('Skill added to your profile!');
+    //res.send('testing');
+})
+
+app.listen(port);
+
