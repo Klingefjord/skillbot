@@ -5,6 +5,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var authorizer = require('../authorizer');
 var request = require("request");
+var addSkill = require("../models/dbmanager");
 //var skills = require("../skills");
 
 require('dotenv').config()
@@ -59,6 +60,7 @@ app.post('/skills', function(req, res) {
     let msg = req.body.text;
     let name = req.body.user_name;
     
+    addSkill(name, msg);
     res.send('Skill added to your profile!');
     //res.send('testing');
 })
