@@ -10,15 +10,13 @@ var assert = require('assert');
 
 require('dotenv').config();
 
-var dbUrl = 'mongodb://localhost:27017/skillbasedb';
-var app = express();
+var dbUrl = process.env.DB_URL;
 var token = process.env.API_KEY;
 var name = process.env.BOT_NAME;
 var port = process.env.PORT || 4390;
-// skillbot.run();
-
 
 // beginning of app
+var app = express();
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/', function(req, res) {
@@ -44,7 +42,6 @@ app.get('/authorization', function(req, res) {
         }
     });
 })
-
 
 // @TODO: rewrite bot to use commands such as these instead!
 app.post('/command', function(req, res) {

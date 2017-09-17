@@ -1,4 +1,8 @@
-function addSkill(user, text) {
+var mongo = require('mongodb').MongoClient;
+var assert = require('assert');
+var dbUrl = 'mongodb://localhost:27017/skillbasedb';
+
+function addSkill(inputUser, inputText) {
     function toPascalCase(s) {
         return (
             s.replace(/(\w)(\w*)/g, 
@@ -9,7 +13,7 @@ function addSkill(user, text) {
     }
 
     // make subarray out of input
-    let pascalArr = toPascalCase(text).split(' ');
+    let pascalArr = toPascalCase(inputText).split(' ');
     let level = undefined;
 
     let filtered = pascalArr.filter((v) => {
@@ -23,10 +27,31 @@ function addSkill(user, text) {
             return false;
         }
         return true;
-    });
+    }).join(' ');
 
-    //insert into db
-    
+    mongo.connect(dbUrl, (err, db) => {
+        assert.equal(null, err);
+        db.collection('users').findOne({user_name: inputUser}, (err, user) => {
+            if (!user) {
+                let tempUser = {
+                    user_name: inputUser,
+                    skills: [{ skill: filtered, lvl: level }]
+                };
+
+                db.collection('users').insertOne(tempUser, (err, res) => {
+                    assert.equal(null, err);
+                    console.log('item inserted!');
+                    db.close();
+                });  
+            } else {
+                let updatedUser = user.skills.push({ skill: filtered, lvl: level });
+                db.collection('users').updateOne({user_name: inputUser}, {$set: updatedUser}, (err, res) => {
+                    assert.equal(null, err);
+                    db.close();
+                });
+            }
+        });
+    });
 }
 
 module.exports = addSkill;
