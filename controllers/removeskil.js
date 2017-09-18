@@ -1,6 +1,6 @@
 var mongo = require('mongodb').MongoClient;
 var assert = require('assert');
-var dbUrl = 'mongodb://localhost:27017/skillbasedb';
+var dbUrl = process.env.DB_URL;
 
 function addSkill(inputUser, inputText) {
     function toPascalCase(s) {
@@ -33,6 +33,7 @@ function addSkill(inputUser, inputText) {
         assert.equal(null, err);
         db.collection('users').findOne({user_name: inputUser}, (err, user) => {
             if (!user) {
+                console.log('Youre inside add new user!');
                 let tempUser = {
                     user_name: inputUser,
                     skills: [{ skill: filtered, lvl: level }]
@@ -44,12 +45,20 @@ function addSkill(inputUser, inputText) {
                     db.close();
                 });  
             } else {
-                let updatedUser = user.skills.push({ skill: filtered, lvl: level });
+                let updatedUser = user;
+                console.log('Youre inside update user! ' + updatedUser);
+                updatedUser.skills.forEach(x => console.log('skill: ' + x.skill + ' ' + x.lvl));
+                updatedUser.skills.push({ skill: filtered, lvl: level });
+
+                console.log('Updated user: ' + updatedUser);
+                console.log('User: ' + inputUser);
                 db.collection('users').updateOne({user_name: inputUser}, {$set: updatedUser}, (err, res) => {
+                    console.log("it worked?");
                     assert.equal(null, err);
                     db.close();
                 });
             }
+            // showAllUsers();
         });
     });
 }

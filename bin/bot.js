@@ -2,11 +2,13 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var authorizer = require('../authorizer');
 var request = require("request");
-var addSkill = require("../models/dbmanager");
 var mongo = require('mongodb');
 var assert = require('assert');
+
+var authorizer = require('../authorizer');
+var addSkill = require("../controllers/addskill");
+var listSkills = require("../controllers/listskills")
 
 require('dotenv').config();
 
@@ -56,6 +58,21 @@ app.post('/addskill', function(req, res) {
     res.send('Skill added to your profile!');
     //res.send('testing');
 })
+
+app.post('/skills', function(req, res) {
+    let name = req.body.user_name;
+
+    listSkills(name).then((userObject) => {
+        console.log(userObject);
+
+        let replyString = `These are the skills you currently have, ${userObject.user_name}: \n`;
+        userObject.skills.forEach((skill) => {
+            replyString += `${skill.skill}, level ${skill.lvl} \n`;
+        });
+        replyString += "\nTo remove a skill, use /removeskill. To modify a skill, use /changeskill <name of skill>";
+        res.send(replyString);
+    });
+});
 
 app.listen(port);
 
