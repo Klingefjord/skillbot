@@ -1,35 +1,17 @@
+'use strict'
+
 var mongo = require('mongodb').MongoClient;
 var assert = require('assert');
-var dbUrl = process.env.DB_URL;
+var Utils = require('../util/utils');
+var dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
 // @TODO make dbUrl connection string based on slack team name
 
 function addSkill(inputUser, inputText) {
-    function toPascalCase(s) {
-        return (
-            s.replace(/(\w)(\w*)/g, 
-            function(g0,g1,g2) {
-                return g1.toUpperCase() + g2.toLowerCase();
-            })
-        );
-    }
-
     // make subarray out of input
-    let pascalArr = toPascalCase(inputText).split(' ');
-    let level = undefined;
+    const pascalArr = Utils.toPascalCase(inputText).split(' ');
+    const {level, filtered} = Utils.removeLvlFromString(pascalArr);
 
-    let filtered = pascalArr.filter((v) => {
-        // remove number and store in level
-        if (!isNaN(v)) {
-            level = v;
-            return false;
-        }
-        // remove 'level' or 'lvl' from array if it is there
-        if (v.match(/(Lvl|Level)/g)) {
-            return false;
-        }
-        return true;
-    }).join(' ');
-
+    console.log(dbUrl);
     mongo.connect(dbUrl, (err, db) => {
         assert.equal(null, err);
         db.collection('users').findOne({user_name: inputUser}, (err, user) => {
@@ -59,21 +41,8 @@ function addSkill(inputUser, inputText) {
                     db.close();
                 });
             }
-            // showAllUsers();
         });
     });
 }
 
 module.exports = addSkill;
-
-// function showAllUsers() {
-//     console.log('in show all users');
-//     mongo.connect(dbUrl, (err, db) => {
-//         db.collection('users').find({}, (err, res) => {
-//             console.log('inside find each user'); 
-//             console.log(res);
-//             res.forEach((user) => console.log(user.user_name + ' ' + user.skills));
-//             db.close();
-//         });
-//     });
-// }

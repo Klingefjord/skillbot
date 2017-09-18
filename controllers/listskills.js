@@ -1,6 +1,6 @@
 var mongo = require('mongodb').MongoClient;
 var assert = require('assert');
-var dbUrl = process.env.DB_URL;
+var dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
 
 // @TODO make dbUrl connection string based on slack team name
 

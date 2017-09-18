@@ -56,8 +56,12 @@ app.post('/addskill', function(req, res) {
     
     addSkill(name, msg);
     res.send('Skill added to your profile!');
-    //res.send('testing');
 })
+
+app.post('/removeskill', function(req, res) {
+    let msg = req.body.text;
+
+});
 
 app.post('/skills', function(req, res) {
     let name = req.body.user_name;

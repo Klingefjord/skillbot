@@ -5,9 +5,10 @@
   "main": "bin/bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node bin/bot.js"
+    "start": "node bin/bot.js",
+    "sayHello": "Nice to meet you!"
   },
-  "author": "",
+  "author": "Oliver Klingefjord",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",
