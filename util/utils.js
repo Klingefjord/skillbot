@@ -10,8 +10,8 @@ module.exports = {
 
     removeLvlFromString(s) {
         let level = undefined;
-        
-        let filtered = s.filter((v) => {
+        console.log('inside removelvlfromstring with val ' + s);
+        let filtered = s.split(' ').filter((v) => {
             // remove number and store in level
             if (!isNaN(v)) {
                 level = v;

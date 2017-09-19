@@ -1,24 +1,27 @@
 'use strict'
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var request = require("request");
-var mongo = require('mongodb');
-var assert = require('assert');
+const express = require('express');
+const bodyParser = require('body-parser');
+const request = require("request");
+const mongo = require('mongodb');
+const assert = require('assert');
 
-var authorizer = require('../authorizer');
-var addSkill = require("../controllers/addskill");
-var listSkills = require("../controllers/listskills")
+const authorizer = require('../authorizer');
+const addSkill = require("../controllers/addskill");
+const removeSkill = require("../controllers/removeskill");
+const listSkills = require("../controllers/listskills");
+const changeLevel = require("../controllers/changelevel");
+const removeUser = require("../controllers/removeuser");
 
 require('dotenv').config();
 
-var dbUrl = process.env.DB_URL;
-var token = process.env.API_KEY;
-var name = process.env.BOT_NAME;
-var port = process.env.PORT || 4390;
+const dbUrl = process.env.DB_URL;
+const token = process.env.API_KEY;
+const name = process.env.BOT_NAME;
+const port = process.env.PORT || 4390;
 
 // beginning of app
-var app = express();
+const app = express();
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/', function(req, res) {
@@ -60,7 +63,24 @@ app.post('/addskill', function(req, res) {
 
 app.post('/removeskill', function(req, res) {
     let msg = req.body.text;
+    let name = req.body.user_name;
 
+    removeSkill(name, msg);
+    res.send('Skill removed from your profile!');
+});
+
+app.post('/changelevel', function(req, res) {
+    let msg = req.body.text;
+    let name = req.body.user_name;
+
+    changeLevel(name, msg);
+    res.send('Skill updated!');
+});
+
+app.post('/bluepill', function(req, res) {
+    let name = req.body.user_name;
+    removeUser(name);
+    res.send('It is done...');
 });
 
 app.post('/skills', function(req, res) {
@@ -69,10 +89,14 @@ app.post('/skills', function(req, res) {
     listSkills(name).then((userObject) => {
         console.log(userObject);
 
-        let replyString = `These are the skills you currently have, ${userObject.user_name}: \n`;
+        let replyString = userObject.skills.length !== 0 
+            ? `These are the skills you currently have, ${userObject.user_name}: \n` 
+            : "Seems like you haven't added any skills so far!";
+
         userObject.skills.forEach((skill) => {
             replyString += `${skill.skill}, level ${skill.lvl} \n`;
         });
+
         replyString += "\nTo remove a skill, use /removeskill. To modify a skill, use /changeskill <name of skill>";
         res.send(replyString);
     });

@@ -15,7 +15,6 @@ function listSkills(inputUser) {
         return new Promise((resolve, reject) => {
                 db.collection('users').findOne({user_name: inputUser}, 
                 (err, user) => {
-                    console.log(user + " named " + user.user_name);
                     if (err) reject(err);
                     else resolve(user);
                 });
