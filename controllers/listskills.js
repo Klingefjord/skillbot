@@ -15,12 +15,9 @@ function listSkills(inputUser) {
         return new Promise((resolve, reject) => {
                 db.collection('users').findOne({user_name: inputUser}, 
                 (err, user) => {
-                    console.log("TOKEN 1")
-                    if (!user.skills[0]) {
-                        console.log("TOKEN 2 ");
-                        user.skills = [];
-                    }
-                    console.log(user.skills);
+                    // make sure we do not return null skills array
+                    if (!user.skills[0]) user.skills = [];
+
                     if (err) reject(err);
                     else resolve(user);
                 });

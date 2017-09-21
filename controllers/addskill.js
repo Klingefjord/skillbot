@@ -18,7 +18,6 @@ function addSkill(inputUser, inputText) {
 
             // copy user object
             let updatedUser = Object.assign({}, user);
-            console.log('Youre inside update user! ' + updatedUser);
 
             // replace null array for nonexistant user
             if(!Utils.userExists(updatedUser)) {
@@ -26,14 +25,10 @@ function addSkill(inputUser, inputText) {
             }
 
             // push values to skills array
-            updatedUser.skills.forEach(x => console.log('skill: ' + x.skill + ' ' + x.lvl));
             updatedUser.skills.push({ skill: filtered, lvl: level });
 
-            console.log('Updated user: ' + updatedUser);
-            console.log('User: ' + inputUser);
             // update user
             db.collection('users').updateOne({user_name: inputUser}, {$set: updatedUser}, (err, res) => {
-                console.log("it worked?");
                 assert.equal(null, err);
                 db.close();
             });

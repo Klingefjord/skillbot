@@ -40,7 +40,6 @@ function changeSkill(inputUser, inputSkill) {
 
             // if user does not have skill, return false
             if (JSON.stringify(newSkills) === JSON.stringify(user.skills)) {
-                console.log("HELLLLOOOOOOO");
                 resolve(false);
             }
 

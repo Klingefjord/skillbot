@@ -65,7 +65,6 @@ app.post('/removeskill', function(req, res) {
     let msg = req.body.text;
     let name = req.body.user_name;
 
-    removeSkill(name, msg);
     res.send('Skill removed from your profile!');
 });
 
@@ -82,8 +81,10 @@ app.post('/changelevel', function(req, res) {
 
 app.post('/bluepill', function(req, res) {
     let name = req.body.user_name;
-    removeUser(name);
-    res.send('It is done...');
+    removeUser(name).then((response) => {
+        console.log(response);
+        res.send(response);
+    })
 });
 
 app.post('/skills', function(req, res) {
