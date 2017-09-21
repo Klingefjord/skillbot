@@ -70,11 +70,14 @@ app.post('/removeskill', function(req, res) {
 });
 
 app.post('/changelevel', function(req, res) {
+    let response = 'Skill updated!';
     let msg = req.body.text;
     let name = req.body.user_name;
 
-    changeLevel(name, msg);
-    res.send('Skill updated!');
+    changeLevel(name, msg).then((success) => {
+        if (!success) response = 'You dont have that skill at the moment!';
+        res.send(response);
+    });
 });
 
 app.post('/bluepill', function(req, res) {
@@ -97,7 +100,7 @@ app.post('/skills', function(req, res) {
             replyString += `${skill.skill}, level ${skill.lvl} \n`;
         });
 
-        replyString += "\nTo remove a skill, use /removeskill. To modify a skill, use /changeskill <name of skill>";
+        replyString += "\nTo remove a skill, use /removeskill. To modify a skill, use /changelevel <name of skill> <new level>";
         res.send(replyString);
     });
 });

@@ -6,36 +6,55 @@ const Utils = require('../util/utils');
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
 
 function changeSkill(inputUser, inputSkill) {
-    mongo.connect(dbUrl, (err, db) => {
-        db.collection('user').findOneAndRemove({user_name: inputUser}, {$set: {user_name: inputUser, skills: []}}, (err, user) => {
-            console.log('it is done...');
+    const { filtered, level } = Utils.removeLvlFromString(inputSkill);
+    const filter = {user_name: inputUser}
+
+    return new Promise((resolve, reject) => {
+        mongo.connect(dbUrl, (err, db) => {
+            if (err) reject(err);
+            else resolve(db);
+        })
+    }).then((db) => {
+        return new Promise((resolve, reject) => {
+    
+            // find user
+            db.collection('users').findOne(filter, (err, user) => {
+                if (err) reject(err);
+                else resolve({user, db});
+            });
+        });  
+    }).then(({user, db}) => {
+        return new Promise((resolve, reject) => {
+            // replace level at skill
+            let newSkills = [];
+            
+            user.skills.forEach((s) => {
+                let skill = Object.assign({}, s);
+
+                if (s.skill.toString().toUpperCase() === filtered.toString().toUpperCase()) {
+                    skill.lvl = level;
+                }
+
+                newSkills.push(skill);
+            });
+
+            // if user does not have skill, return false
+            if (JSON.stringify(newSkills) === JSON.stringify(user.skills)) {
+                console.log("HELLLLOOOOOOO");
+                resolve(false);
+            }
+
+            let tempUser = {
+                user_name: inputUser,
+                skills: newSkills
+            }
+
+            db.collection('users').findOneAndUpdate(filter, {$set: tempUser}, (err, user) => {
+                if (err) reject(err);
+                else resolve(true);
+            });
         });
     });
-    //     assert.equal(null, err);
-
-    //     const col = db.collection('users');
-    //     const filter = {user_name: inputUser}
-    //     const { filtered, level } = Utils.removeLvlFromString(inputSkill);
-
-    //     col.findOne(filter, (err, user) => {
-    //         assert.equal(null, err);
-            
-    //         let newSkills =  user.skills.slice().forEach((s) => {
-    //             if (s.skill.toString().toUpperCase() === filtered.toString().toUpperCase()) {
-    //                 s.level = level;
-    //             }
-    //         });
-
-    //         let tempUser = {
-    //             user_name: inputUser,
-    //             skills: newSkills
-    //         }
-
-    //         col.findOneAndUpdate(filter, {$set: tempUser}, (err, user) => {
-    //             assert.equal(null, err);
-    //         });
-    //     });
-    // });
 }
 
 module.exports = changeSkill;

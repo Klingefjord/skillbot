@@ -25,7 +25,11 @@ module.exports = {
         }).join(' '); 
 
         return { filtered, level };
-    } 
+    }, 
+
+    userExists(user) {
+        return user.skills[0] ? true : false;
+    }
 
 
 }
