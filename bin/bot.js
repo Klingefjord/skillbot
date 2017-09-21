@@ -65,6 +65,7 @@ app.post('/removeskill', function(req, res) {
     let msg = req.body.text;
     let name = req.body.user_name;
 
+    removeSkill(name, msg);
     res.send('Skill removed from your profile!');
 });
 

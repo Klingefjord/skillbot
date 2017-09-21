@@ -20,6 +20,9 @@ function removeSkill(inputUser, inputSkill) {
                 return s.skill.toString().toUpperCase() !== filtered.toString().toUpperCase();
             });
 
+            newSkills.forEach(x => console.log("NEW", x));
+            user.skills.forEach(x => console.log("OLD", x));
+
             let tempUser = {
                 user_name: inputUser,
                 skills: newSkills
