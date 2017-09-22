@@ -2,16 +2,16 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const request = require("request");
+const request = require('request');
 const mongo = require('mongodb');
 const assert = require('assert');
 
 const authorizer = require('../authorizer');
-const addSkill = require("../controllers/addskill");
-const removeSkill = require("../controllers/removeskill");
-const listSkills = require("../controllers/listskills");
-const changeLevel = require("../controllers/changelevel");
-const removeUser = require("../controllers/removeuser");
+const addSkill = require('../controllers/addskill');
+const removeSkill = require('../controllers/removeskill');
+const listSkills = require('../controllers/listskills');
+const changeLevel = require('../controllers/changelevel');
+const removeUser = require('../controllers/removeuser');
 
 require('dotenv').config();
 
@@ -25,7 +25,7 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/', function(req, res) {
-    res.send('hello world!');
+    res.send("hello world!");
 })
 
 app.get('/authorization', function(req, res) {
@@ -43,22 +43,22 @@ app.get('/authorization', function(req, res) {
             console.log(error);
         } else {
             res.json(body);
-            //setUpBot();
         }
     });
 })
 
 // @TODO: rewrite bot to use commands such as these instead!
 app.post('/command', function(req, res) {
-    res.send('works');
+    res.send("works");
 });
 
 app.post('/addskill', function(req, res) {
     let msg = req.body.text;
     let name = req.body.user_name;
     
-    addSkill(name, msg);
-    res.send('Skill added to your profile!');
+    addSkill(name, msg).then((response) => {
+        res.send(response); 
+    });
 })
 
 app.post('/removeskill', function(req, res) {
@@ -66,16 +66,16 @@ app.post('/removeskill', function(req, res) {
     let name = req.body.user_name;
 
     removeSkill(name, msg);
-    res.send('Skill removed from your profile!');
+    res.send("Skill removed from your profile!");
 });
 
 app.post('/changelevel', function(req, res) {
-    let response = 'Skill updated!';
+    let response = "Skill updated!";
     let msg = req.body.text;
     let name = req.body.user_name;
 
     changeLevel(name, msg).then((success) => {
-        if (!success) response = 'You dont have that skill at the moment!';
+        if (!success) response = "You dont have that skill at the moment!";
         res.send(response);
     });
 });
@@ -92,17 +92,21 @@ app.post('/skills', function(req, res) {
     let name = req.body.user_name;
 
     listSkills(name).then((userObject) => {
+        console.log("Helloeh?");
         console.log(userObject);
 
-        let replyString = userObject.skills.length !== 0 
-            ? `These are the skills you currently have, ${userObject.user_name}: \n` 
-            : "Seems like you haven't added any skills so far!";
+        let replyString = `Seems like you haven't added any skills so far!`;
 
-        userObject.skills.forEach((skill) => {
-            replyString += `${skill.skill}, level ${skill.lvl} \n`;
-        });
+        if (userObject) {
+            replyString = `These are the skills you currently have, ${userObject.user_name}: \n`;
+
+            userObject.skills.forEach((skill) => {
+                replyString += `${skill.skill}, level ${skill.lvl || "not specified"} \n`;
+            });
+        }
 
         replyString += "\nTo remove a skill, use /removeskill. To modify a skill, use /changelevel <name of skill> <new level>";
+
         res.send(replyString);
     });
 });

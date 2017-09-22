@@ -13,7 +13,7 @@ function removeUser(inputUser) {
         })
     }).then((db) => {
         return new Promise((resolve, reject) => {
-            db.collection('user').remove({user_name: inputUser}, true, (err, user) => {
+            db.collection('users').remove({user_name: inputUser}, true, (err, res) => {
                 if (err) reject(err)
                 else resolve('It is done...');
             });

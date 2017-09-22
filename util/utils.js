@@ -28,7 +28,7 @@ module.exports = {
     }, 
 
     userExists(user) {
-        return user.skills[0] ? true : false;
+        return user ? true : false;
     }
 
 
