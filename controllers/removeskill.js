@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');

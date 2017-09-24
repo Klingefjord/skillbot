@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
@@ -51,6 +51,7 @@ function changeSkill(inputUser, inputSkill) {
             db.collection('users').findOneAndUpdate(filter, {$set: tempUser}, (err, user) => {
                 if (err) reject(err);
                 else resolve(true);
+                db.close();
             });
         });
     });

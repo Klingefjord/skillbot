@@ -1,8 +1,10 @@
-var mongo = require('mongodb').MongoClient;
-var assert = require('assert');
-var addUser = require('./addUser');
-var Utils = require('../util/utils');
-var dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
+'use strict';
+
+const mongo = require('mongodb').MongoClient;
+const assert = require('assert');
+const addUser = require('./addUser');
+const Utils = require('../util/utils');
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
 
 // @TODO make dbUrl connection string based on slack team name
 

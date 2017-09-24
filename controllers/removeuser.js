@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
@@ -16,6 +16,7 @@ function removeUser(inputUser) {
             db.collection('users').remove({user_name: inputUser}, true, (err, res) => {
                 if (err) reject(err)
                 else resolve('It is done...');
+                db.close();
             });
         });
     });

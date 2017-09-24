@@ -12,6 +12,9 @@ const removeSkill = require('../controllers/removeskill');
 const listSkills = require('../controllers/listskills');
 const changeLevel = require('../controllers/changelevel');
 const removeUser = require('../controllers/removeuser');
+const match = require('../controllers/match');
+const addWtl = require('../controllers/addWtl');
+const listKnowers = require('../controllers/listKnowers');
 
 require('dotenv').config();
 
@@ -69,6 +72,24 @@ app.post('/removeskill', function(req, res) {
     res.send("Skill removed from your profile!");
 });
 
+app.post('/teachme', function(req, res) {
+    let msg = req.body.text;
+    let name = req.body.user_name;
+
+    addWtl(name, msg).then((response) => {
+        res.send(`${response} added to list of skills you wish to learn!`);
+    });
+});
+
+//@TODO list all users who know a certain skill
+app.post('/knows', function(req, res) {
+    let skill = req.body.text;
+    listKnowers(skill).then((result) => {
+        console.log(result);
+        res.send("success???");
+    });
+});
+
 app.post('/changelevel', function(req, res) {
     let response = "Skill updated!";
     let msg = req.body.text;
@@ -97,12 +118,16 @@ app.post('/skills', function(req, res) {
 
         let replyString = `Seems like you haven't added any skills so far!`;
 
-        if (userObject) {
-            replyString = `These are the skills you currently have, ${userObject.user_name}: \n`;
-
-            userObject.skills.forEach((skill) => {
-                replyString += `${skill.skill}, level ${skill.lvl || "not specified"} \n`;
-            });
+        try {
+            if (userObject.skills.length > 0) {
+                replyString = `These are the skills you currently have, ${userObject.user_name}: \n`;
+      
+                userObject.skills.forEach((skill) => {
+                    replyString += `${skill.skill}, level ${skill.lvl || "not specified"} \n`;
+                });
+            }
+        } catch(err) {
+            console.log(err);
         }
 
         replyString += "\nTo remove a skill, use /removeskill. To modify a skill, use /changelevel <name of skill> <new level>";
