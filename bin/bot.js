@@ -119,6 +119,7 @@ app.post('/knows', function(req, res) {
                     "text":  `Level: ${skill.lvl || "(not specified)"}`,
                     "color": renderColor(skill.lvl),
                 });
+                findUserProfile(user.user_name);
             });
         } else {
             response = `Currently no people in this team know ${filtered}`;
@@ -140,6 +141,7 @@ app.post('/changelevel', function(req, res) {
 });
 
 app.post('/bluepill', function(req, res) {
+    console.log(req.body);
     let name = req.body.user_name;
     removeUser(name).then((response) => {
         console.log(response);
@@ -182,11 +184,11 @@ function findUserProfile(username) {
 
     request({
         url: 'https://slack.com/api/users.profile.get', //URL to hit
-        qs: {token: access_token, user: username, client_id: clientId, client_secret: clientSecret}, //Query string data
+        qs: {token: access_token, user: "U6TG87SKA", client_id: clientId, client_secret: clientSecret}, //Query string data
         method: 'GET', //Specify the method
     }, function (error, response, body) {
         if (error) console.log(error);
-        else console.log(body);
+        else console.log( "HEREEE WE GOOO", body);
     });
 }
 
