@@ -9,7 +9,6 @@ const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
 // @TODO make dbUrl connection string based on slack team name
 
 function listSkills(inputUser) {
-    console.log("in listskills");
     return new Promise((resolve, reject) => {
         mongo.connect(dbUrl, (err, db) => {
             if (err) reject(err);

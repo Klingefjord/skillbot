@@ -1,17 +1,17 @@
 module.exports = {
-    toPascalCase(s) {
-        return (
-            s.replace(/(\w)(\w*)/g, 
-            (g0,g1,g2) => {
-                return g1.toUpperCase() + g2.toLowerCase();
-            })
-        );
-    },
-
     removeLvlFromString(s) {
+        this.toPascalCase = (stringIn) => {
+            return (
+                stringIn.replace(/(\w)(\w*)/g, 
+                (g0,g1,g2) => {
+                    return g1.toUpperCase() + g2.toLowerCase();
+                })
+            );
+        }
+
         let level = undefined;
         console.log('inside removelvlfromstring with val ' + s);
-        let filtered = s.split(' ').filter((v) => {
+        let filtered = this.toPascalCase(s).split(' ').filter((v) => {
             // remove number and store in level
             if (!isNaN(v)) {
                 level = v;

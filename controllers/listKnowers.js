@@ -17,11 +17,11 @@ function listKnowers(inputSkill) {
     })
     .then((db) => {
         return new Promise((resolve, reject) => {
+            console.log(filtered);
             db.collection('users').find({ skills: { $elemMatch: { skill: filtered } } }).toArray((err, doc) => {
                 // @TODO refine this query
-                console.log(doc);
                 if (err) reject(err);
-                resolve(doc);
+                resolve({ doc, filtered });
                 db.close();
             });
         });

@@ -4,6 +4,7 @@ const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
 const Utils = require('../util/utils');
 const addUser = require('./addUser');
+const checkForMatch = require('./checkForMatch');
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
 // @TODO make dbUrl connection string based on slack team name
 
@@ -37,10 +38,10 @@ function wantToLearn(inputUser, inputString) {
         return new Promise((resolve, reject) => {
             db.collection('users').findOneAndUpdate({user_name: tempUser.user_name}, {$set: tempUser}, (err, res) => {
                 if (err) reject(err);
-                else resolve(filtered);
+                else resolve({tempUser, filtered});
+                // check for match immediately when new wtl is added
                 db.close();
             });
-            // query array against other users
         });
     });
 }
