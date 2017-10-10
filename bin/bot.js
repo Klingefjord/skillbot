@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const mongo = require('mongodb');
 const assert = require('assert');
+const Promise = require('bluebird');
 
 // routes
 const addSkill = require('../controllers/addskill');
@@ -25,7 +26,7 @@ const name = process.env.BOT_NAME;
 const port = process.env.PORT || 4390;
 
 // this gets filled when app is authorized
-let access_token;
+let access_token = 'xoxp-233093760678-231552264656-231939356576-489caca788cae121481973344492491e';
 
 require('dotenv').config();
 
@@ -105,27 +106,63 @@ app.post('/knows', function(req, res) {
             ]
         }
 
+        // const Promise = require('bluebird')
+        
+        // let queue = [];
+        
+        // queue.push(function() {
+        //   return new Promise(function(resolve, reject) {
+        //     // Some asynchronous task.
+        //     console.log("Processing item 1...");
+        //     setTimeout(resolve, 3000);
+        //   });
+        // });
+        
+        // queue.push(function() {
+        //   return new Promise(function(resolve, reject) {
+        //     // Some asynchronous task.
+        //     console.log("Processing item 2...");
+        //     setTimeout(resolve, 1000);
+        //   });
+        // });
+        
+        // Promise.each(queue, function(queue_item) {
+        //   // *Now* we call the function. Since it returns a promise, the next iteration will not run until it resolves.
+        //   return queue_item();
+        // });
+
         // @todo - attach user profile link & image
         console.log(doc, filtered);
         if (doc.length > 0) {
+            let quene = [];
             doc.forEach(user => {
-                console.log(user);
-                let skill = user.skills.find(s => {
+                quene.push(new Promise((resolve, reject) => {
+                        resolve(findUserProfile(user.user_name));
+                }));
+            });
+
+            Promise.each(quene, (user) => {
+
+                let dbUser = doc.find(u => {
+                    return u.user_name === user.display_name;
+                })
+                let skill = dbUser.skills.find(s => {
                     return s.skill === filtered;
                 });
 
                 response.attachments.push({
-                    "title": `${user.user_name}`,
+                    "title": `${dbUser.user_name}`,
                     "text":  `Level: ${skill.lvl || "(not specified)"}`,
                     "color": renderColor(skill.lvl),
+                    "image_url": user.image_48
                 });
-                findUserProfile(user.user_name);
+            }).then(() => {
+                res.send(response);
             });
         } else {
             response = `Currently no people in this team know ${filtered}`;
+            res.send(response);
         }
-
-        res.send(response);
     });
 });
 
@@ -178,19 +215,32 @@ app.post('/skills', function(req, res) {
     });
 });
 
+//@TODO: Refactor all db managers to incorporate user Tag & display name!
 function findUserProfile(username) {
     const clientId = process.env.SLACK_CLIENT_ID;
     const clientSecret = process.env.SLACK_CLIENT_SECRET;
-
-    request({
-        url: 'https://slack.com/api/users.profile.get', //URL to hit
-        qs: {token: access_token, user: "U6TG87SKA", client_id: clientId, client_secret: clientSecret}, //Query string data
-        method: 'GET', //Specify the method
-    }, function (error, response, body) {
-        if (error) console.log(error);
-        else console.log( "HEREEE WE GOOO", body);
+    return new Promise((resolve, reject) => {
+        request({
+            url: 'https://slack.com/api/users.profile.get', //URL to hit
+            qs: {token: access_token, user: "U6TG87SKA", client_id: clientId, client_secret: clientSecret}, //Query string data
+            method: 'GET', //Specify the method
+        }, function (error, response, body) {
+            //console.log(body);
+            console.log(JSON.parse(body).profile.image_48);
+            if (error) reject(error);
+            else resolve(JSON.parse(body).profile);
+        });
     });
 }
+
+// function getImgUrls(users) {
+//     let imgArray = [];
+//     return new Promise((resolve, reject) => {
+//         users.forEach((user) => {
+//             findUserProfile(user)
+//         });
+//     });
+// }
 
 function setupMatch(matchObject, user) {
     console.log(access_token);
