@@ -11,6 +11,7 @@
   "author": "Oliver Klingefjord",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "body-parser": "^1.17.2",
     "botkit": "^0.5.7",
     "dotenv": "^4.0.0",
