@@ -1,5 +1,3 @@
-'use strict';
-
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
 const findUserProfile = require('../user');

@@ -1,5 +1,3 @@
-'use strict';
-
 const mongo = require('mongodb').MongoClient;
 const addToMatches = require('./addToMatches');
 const assert = require('assert');

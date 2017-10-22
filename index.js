@@ -27,12 +27,14 @@ const renderColor = require('./util/pickColor');
 const authorizer = require('./authorizer');
 const findUserProfile = require('./user.js');
 
+require('dotenv').config();
+
 const dbUrl = process.env.DB_URL;
 const token = process.env.API_KEY;
-const name = process.env.BOT_NAME;
 const port = process.env.PORT || 4390;
 
-require('dotenv').config();
+let access_token = process.env.TOKEN;
+
 
 // beginning of app
 const app = express();
@@ -144,7 +146,6 @@ function setupMatch(matchObject, user, count) {
     
     const clientId = process.env.SLACK_CLIENT_ID;
     const clientSecret = process.env.SLACK_CLIENT_SECRET;
-    const access_token = process.env.TOKEN;
 
     const createGroup = {
         url: 'https://slack.com/api/groups.create',

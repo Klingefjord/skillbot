@@ -13,10 +13,9 @@ module.exports = function(req, res) {
         if (error) {
             console.log(error);
         } else {
-            res.json(body);
             access_token = JSON.parse(body).access_token;
+            res.json(body);
         }
     });
 }
-///// DB URL IS HIDDEN HERE!
-///// DB_URL=mongodb://oklingefjord:borealis66@ds227045.mlab.com:27045/skillbasedb
+
