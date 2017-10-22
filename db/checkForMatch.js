@@ -1,13 +1,15 @@
 'use strict';
 
 const mongo = require('mongodb').MongoClient;
+const addToMatches = require('./addToMatches');
 const assert = require('assert');
 const Utils = require('../util/utils');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
+require('dotenv').config();
+const dbUrl = process.env.DB_URL;
 
 // @TODO make dbUrl connection string based on slack team name
 
-function checkForMatch(user, wtl) {
+function checkForMatch(user, wtl, team_id) {
     console.log("inside check for match", user, wtl);
     return new Promise((resolve, reject) => {
         mongo.connect(dbUrl, (err, db) => {
@@ -17,11 +19,10 @@ function checkForMatch(user, wtl) {
     })
     .then((db) => {
         return new Promise((resolve, reject) => {
-            db.collection('users').find({ skills: { $elemMatch: { skill: wtl } } }).toArray((err, doc) => {
+            // returns array of users who know what they want to learn
+            db.collection(`${team_id}_users`).find({ skills: { $elemMatch: { skill: wtl } } }).toArray((err, doc) => {
                 if (err) reject(err);
                 let matches = [];
-                console.log("Result from first query");
-                console.log(doc);
 
                 doc.forEach(matchedUser => {
                     // loop through wtl of matchedUsers
@@ -30,17 +31,25 @@ function checkForMatch(user, wtl) {
                         // if match with skills
                         user.skills.forEach(skill => {
                             console.log(skill.skill)
-                            if (matchedWtl === skill.skill) {
-                                console.log("MATCH");
-                                matches.push({user: matchedUser, skill: matchedWtl, wtl: skill.skill});
+                            if (matchedWtl === skill.skill && matchedUser.user_id !== user.user_id) {
+                                matches.push({user: matchedUser, skill: wtl, wtl: skill.skill});
                             }
                         });
                     });
                 });
-                console.log("matches");
-                console.log(matches);
+
                 resolve(matches);
             });
+        });
+    }).then((matches) => {
+        return new Promise((resolve, reject) => {
+            if (matches.length > 0) {
+                addToMatches(matches, team_id).then((count) => {
+                    resolve({matches, count});
+                });
+            } else {
+                resolve({matches});
+            }
         });
     });
 }

@@ -3,28 +3,26 @@
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
 const Utils = require('../util/utils');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
+require('dotenv').config();
+const dbUrl = process.env.DB_URL;
 
-function removeSkill(inputUser, inputSkill) {
+function removeSkill(inputUserId, inputSkill, team_id) {
     mongo.connect(dbUrl, (err, db) => {
         assert.equal(null, err);
 
-        const col = db.collection('users');
-        const filter = {user_name: inputUser}
+        const col = db.collection(`${team_id}_users`);
+        const filter = {user_id: inputUserId}
         const { filtered } = Utils.removeLvlFromString(inputSkill);
 
         col.findOne(filter, (err, user) => {
             assert.equal(null, err);
-            
+
+
             let newSkills =  user.skills.slice().filter(s => {
                 return s.skill.toString().toUpperCase() !== filtered.toString().toUpperCase();
             });
 
-            newSkills.forEach(x => console.log("NEW", x));
-            user.skills.forEach(x => console.log("OLD", x));
-
             let tempUser = {
-                user_name: inputUser,
                 skills: newSkills
             }
 

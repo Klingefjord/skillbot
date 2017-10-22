@@ -3,11 +3,12 @@
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
 const Utils = require('../util/utils');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
+require('dotenv').config();
+const dbUrl = process.env.DB_URL;
 
-function changeSkill(inputUser, inputSkill) {
+function changeSkill(inputUserId, inputSkill, team_id) {
     const { filtered, level } = Utils.removeLvlFromString(inputSkill);
-    const filter = {user_name: inputUser}
+    const filter = {user_id: inputUserId}
 
     return new Promise((resolve, reject) => {
         mongo.connect(dbUrl, (err, db) => {
@@ -18,7 +19,7 @@ function changeSkill(inputUser, inputSkill) {
         return new Promise((resolve, reject) => {
     
             // find user
-            db.collection('users').findOne(filter, (err, user) => {
+            db.collection(`${team_id}_users`).findOne(filter, (err, user) => {
                 if (err) reject(err);
                 else resolve({user, db});
             });
@@ -44,11 +45,10 @@ function changeSkill(inputUser, inputSkill) {
             }
 
             let tempUser = {
-                user_name: inputUser,
                 skills: newSkills
             }
 
-            db.collection('users').findOneAndUpdate(filter, {$set: tempUser}, (err, user) => {
+            db.collection(`${team_id}_users`).findOneAndUpdate(filter, {$set: tempUser}, (err, user) => {
                 if (err) reject(err);
                 else resolve(true);
                 db.close();

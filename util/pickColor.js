@@ -1,3 +1,7 @@
+/**
+ *  Returns a hex color for level (0 - 10)
+ */
+
 module.exports = function(skillLvl) {
     switch(Number(skillLvl)) {
         case 1:

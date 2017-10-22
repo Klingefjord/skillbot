@@ -1,13 +1,14 @@
-'use strict';
-
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
+const findUserProfile = require('../user');
 const Utils = require('../util/utils');
 const addUser = require('./addUser');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
+require('dotenv').config();
+const dbUrl = process.env.DB_URL;
+
 // @TODO make dbUrl connection string based on slack team name
 
-function addSkill(inputUser, inputText) {
+function addSkill(inputText, inputUserId, team_id) {
 
     // make subarray out of input
     const { level, filtered } = Utils.removeLvlFromString(inputText);
@@ -17,13 +18,13 @@ function addSkill(inputUser, inputText) {
             if (err) reject(err);
             else resolve(db);
         });
-    }).then((db) => {
+    }).then((db) => { 
         return new Promise((resolve, reject) => {
-            db.collection('users').findOne({user_name: inputUser}, (err, user) => {
+            db.collection(`${team_id}_users`).findOne({user_id: inputUserId}, (err, user) => {
                 if (err) reject(err);
                 else {
                     if(!user) {
-                        addUser(inputUser).then((insertedUser) => {
+                        addUser(inputUserId).then((insertedUser) => {
                             console.log("user added!");
                             let updatedUser = insertedUser;
                             updatedUser.skills.push({ skill: filtered, lvl: level });                                                   
@@ -39,7 +40,7 @@ function addSkill(inputUser, inputText) {
         });
     }).then(({ updatedUser, db }) => {
         return new Promise((resolve, reject) => {
-            db.collection('users').updateOne({user_name: inputUser}, {$set: updatedUser}, (err, res) => {
+            db.collection(`${team_id}_users`).updateOne({user_name: updatedUser.user_name}, {$set: updatedUser}, (err, res) => {
                 if(err) reject(err);
                 else resolve(`${filtered} added to your profile!`);
                 db.close();

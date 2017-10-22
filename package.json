@@ -2,10 +2,10 @@
   "name": "skillbase",
   "version": "1.0.0",
   "description": "backend for skillbot",
-  "main": "bin/bot.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node bin/bot.js",
+    "start": "node index.js",
     "sayHello": "Nice to meet you!"
   },
   "author": "Oliver Klingefjord",
@@ -20,6 +20,7 @@
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.11",
     "request": "^2.81.0",
+    "request-promise": "^4.2.2",
     "slackbots": "^0.3.0"
   }
 }

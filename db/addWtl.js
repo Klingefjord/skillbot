@@ -1,14 +1,13 @@
-'use strict';
-
 const mongo = require('mongodb').MongoClient;
 const assert = require('assert');
 const Utils = require('../util/utils');
 const addUser = require('./addUser');
 const checkForMatch = require('./checkForMatch');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/skillbasedb';
+require('dotenv').config();
+const dbUrl = process.env.DB_URL;
 // @TODO make dbUrl connection string based on slack team name
 
-function wantToLearn(inputUser, inputString) {
+function wantToLearn(inputString, inputUserId, team_id) {
     const { filtered }  = Utils.removeLvlFromString(inputString);
 
     return new Promise((resolve, reject) => {
@@ -18,12 +17,12 @@ function wantToLearn(inputUser, inputString) {
         });        
     }).then((db) => {
         return new Promise((resolve, reject) => {
-            db.collection('users').findOne({user_name: inputUser}, (err, user) => {
+            db.collection(`${team_id}_users`).findOne({user_id: inputUserId}, (err, user) => {
                 if (err) reject(err);
                 else {
                     // add user if user doesnt exist
                     if (!user) {
-                        addUser(user).then((newUser) => {
+                        addUser(inputUserId, team_id).then((newUser) => {
                             let tempUser = addWtlToUser(newUser, filtered);
                             resolve({db, tempUser});
                         });
@@ -36,9 +35,10 @@ function wantToLearn(inputUser, inputString) {
         });
     }).then(({db, tempUser}) => {
         return new Promise((resolve, reject) => {
-            db.collection('users').findOneAndUpdate({user_name: tempUser.user_name}, {$set: tempUser}, (err, res) => {
+            db.collection(`${team_id}_users`).findOneAndUpdate({user_id: tempUser.user_id}, {$set: tempUser}, (err, res) => {
                 if (err) reject(err);
                 else resolve({tempUser, filtered});
+
                 // check for match immediately when new wtl is added
                 db.close();
             });
@@ -51,6 +51,7 @@ function addWtlToUser(inputUser, wtl) {
     let tempUser = {
         user_name: inputUser.user_name,
         skills: inputUser.skills,
+        user_id: inputUser.user_id,
         wtl: inputUser.wtl
     }
 
