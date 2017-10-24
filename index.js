@@ -1,5 +1,3 @@
-'use strict'
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
@@ -78,11 +76,8 @@ app.post('/teachme', function(req, res) {
  * @param user - user object
  */
 
- //@todo fix this function
+
 function setupMatch(matchObject, user, count) {
-    console.log("MATCH OBJECT", matchObject);
-    console.log("USER", user);
-    
     const clientId = process.env.SLACK_CLIENT_ID;
     const clientSecret = process.env.SLACK_CLIENT_SECRET;
 
@@ -95,14 +90,14 @@ function setupMatch(matchObject, user, count) {
 
     let inviteToGroup = {
         url: 'https://slack.com/api/groups.invite',
-        qs: {token: access_token, channel: "INSERT_ID_HERE", user: user.user_id, client_id: clientId, client_secret: clientSecret}, //Query string data
+        qs: {token: access_token, channel: "", user: user.user_id, client_id: clientId, client_secret: clientSecret}, //Query string data
         method: 'GET', //Specify the method
     }
 
     let setPurpose = {
         url: 'https://slack.com/api/groups.setPurpose',
         qs: {token: access_token, 
-            channel: `INSERT_ID_HERE`, 
+            channel: "", 
             purpose: `You have been matched! ${user.user_name} knows about ${matchObject.wtl} whereas ${matchObject.user.user_name} knows about ${matchObject.skill}.`, 
             client_id: clientId, 
             client_secret: clientSecret}, //Query string data
