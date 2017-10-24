@@ -21,6 +21,7 @@ const addWtl = require('./db/addWtl');
 const addSkillRoute = require('./routes/addskill');
 const knowsRoute = require('./routes/knows');
 const listWtlRoute = require('./routes/listWtl');
+const bluePill = require('./routes/bluePill');
 
 // extra
 const renderColor = require('./util/pickColor');
@@ -40,10 +41,7 @@ let access_token = process.env.TOKEN;
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}))
 
-app.get('/', function(req, res) {
-    res.send("hello world!");
-})
-
+app.post('/bluepill', bluePill);
 app.get('/authorization', authorizer);
 
 app.post('/command', function(req, res) {
