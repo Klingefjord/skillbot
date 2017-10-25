@@ -1,4 +1,5 @@
 const request = require('request');
+const oauth = require('./db/oauth');
 
 module.exports = function(req, res) {
     const code = req.query.code;
@@ -6,15 +7,22 @@ module.exports = function(req, res) {
     const clientSecret = process.env.SLACK_CLIENT_SECRET;
 
     request({
-        url: 'https://slack.com/api/oauth.access', //URL to hit
+        url: 'https://slack.com/api/oauth.access',
         qs: {code: req.query.code, client_id: clientId, client_secret: clientSecret}, //Query string data
-        method: 'GET', //Specify the method
-    }, function (error, response, body) {
+        method: 'GET',
+    }, function (error, response) {
         if (error) {
             console.log(error);
         } else {
-            access_token = JSON.parse(body).access_token;
-            res.json(body);
+            
+            // Add access token to database
+            const body = JSON.parse(response.body);
+            const access_token = body.access_token;
+            const team_id = body.team_id;
+
+            oauth.set(team_id, access_token);
+            console.log(body);
+            res.json("Skillbase is added to your team!");
         }
     });
 }
