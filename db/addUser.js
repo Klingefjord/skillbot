@@ -10,7 +10,7 @@ function addUser(inputUserId, team_id) {
     let userName;
 
     return new Promise((resolve, reject) => {
-        resolve(findUserProfile({user_id: inputUserId}))
+        resolve(findUserProfile(inputUserId, team_id));
     }).then((profile) => {
         return new Promise((resolve, reject) => {
             userName = profile.display_name;
