@@ -24,7 +24,7 @@ function addSkill(inputText, inputUserId, team_id) {
                 if (err) reject(err);
                 else {
                     if(!user) {
-                        addUser(inputUserId).then((insertedUser) => {
+                        addUser(inputUserId, team_id).then((insertedUser) => {
                             console.log("user added!");
                             let updatedUser = insertedUser;
                             updatedUser.skills.push({ skill: filtered, lvl: level });                                                   

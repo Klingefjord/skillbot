@@ -3,7 +3,6 @@ const listKnowers = require('../db/listKnowers');
 const findUserProfile = require('../user');
 const renderColor = require('../util/pickColor');
 
-// apparently, it does not work with more parameters than req, res & next :/
 
 module.exports = function(req, res) {
     let skill = req.body.text;
@@ -21,7 +20,7 @@ module.exports = function(req, res) {
             let quene = [];
             doc.forEach(user => {
                 quene.push(new Promise((resolve, reject) => {
-                        resolve(findUserProfile(user));
+                    resolve(findUserProfile(user));
                 }));
             });
 
