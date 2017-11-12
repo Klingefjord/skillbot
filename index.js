@@ -21,6 +21,9 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 ///////// Routes
 app.get('/authorization', authorizer);
+app.get('/', (req, res) => {
+    res.send("Hello :)");
+})
 
 app.post('/knows', knowsRoute);
 app.post('/changelevel', changeLevel);
