@@ -17,14 +17,12 @@ module.exports = function(req, res) {
         }
         console.log(doc, filtered);
         if (doc.length > 0) {
-            let quene = [];
+            let promises = [];
             doc.forEach(user => {
-                quene.push(new Promise((resolve, reject) => {
-                    resolve(findUserProfile(user));
-                }));
+                promises.push(findUserProfile(user.user_id, team_id));
             });
 
-            Promise.each(quene, (user) => {
+            Promise.each(promises, (user) => {
 
                 let dbUser = doc.find(u => {
                     console.log(u);
@@ -37,7 +35,7 @@ module.exports = function(req, res) {
                     });
     
                     response.attachments.push({
-                        "title": `${dbUser.user_name}`,
+                        "title": `${user.display_name}`,
                         "text":  `Level: ${skill.lvl || "(not specified)"}`,
                         "color": renderColor(skill.lvl),
                         "image_url": user.image_48 || ""
