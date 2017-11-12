@@ -5,6 +5,11 @@ module.exports = function(req, res) {
     let id = req.body.user_id;
     let team_id = req.body.team_id;    
     let response;
+
+    if (!id && !team_id) {
+        res.send("Not a valid request!");
+        return
+    }
     
     findUser(id, team_id).then((userObject) => {
         response = {

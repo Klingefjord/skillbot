@@ -8,6 +8,11 @@ module.exports = function(req, res) {
     let skill = req.body.text;
     let team_id = req.body.team_id;    
 
+    if (!skill && !team_id) {
+        res.send("Not a valid request!");
+        return
+    }
+
     listKnowers(skill, team_id).then(({doc, filtered}) => {
 
         let response = {
