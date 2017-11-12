@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 ////////// route functions
-const changeLevel = require('./routes/changelevel');
+const changeLevel = require('./routes/changeLevel');
 const addSkillRoute = require('./routes/addskill');
 const knowsRoute = require('./routes/knows');
 const listWtlRoute = require('./routes/listWtl');
